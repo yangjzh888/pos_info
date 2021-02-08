@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cu.mapper.PosMapper">
+
+<!--    <select id="getPosList" resultType="java.util.Map">-->
+<!--        SELECT TOP 50-->
+<!--            pos.pos_bianhao,-->
+<!--            pos.louyu_mingcheng,-->
+<!--            pos.anzhuang_weizhi,-->
+<!--            pos.qu_ju,-->
+<!--            pos.pon_biaoshi,-->
+<!--            pos.bian_qian,-->
+<!--            pos.fenxian_he,-->
+<!--            pos.olt_mingcheng,-->
+<!--            pos.cao_lu,-->
+<!--            pos.duankou_hao,-->
+<!--            pos.ip_dizhi,-->
+<!--            pos.olt_leixing,-->
+<!--            pos.chang_jia,-->
+<!--            pos.caozuo_yuan,-->
+<!--            pos.caozuo_shijian-->
+<!--        FROM nlsc_pos_info pos-->
+<!--    </select>-->
+
+<!--    <select id="getBuildPersonId" resultType="java.lang.String">-->
+<!--        SELECT UserId from Base_User where RealName=#{RealName} and Mobile=#{Mobile};-->
+<!--    </select>-->
+
+<!--    <select id="getManholeCoverId" parameterType="java.lang.String" resultType="java.lang.String">-->
+<!--        SELECT ManholeID FROM LT_DevicesList WHERE ManholeCoverNumber=#{manholeCoverNumber}-->
+<!--    </select>-->
+
+<!--    <insert id="addWorkOrder" parameterType="com.oss.entity.WorkOrder">-->
+<!--        INSERT INTO LT_WorkOrderList-->
+<!--		    (Id, order_type, apply_person_name, apply_date, apply_depart_name, gd_num,-->
+<!--			 project_name, project_code, project_booklet_name, project_booklet_code,-->
+<!--			 project_manager, project_manager_phone, build_unit, build_time_limit,-->
+<!--			 build_person_id, build_unit_person, build_site_phone, build_content,-->
+<!--			 build_section, lx_program, sf_delay, sptg_datetime, end_datetime,-->
+<!--			 create_date, create_user_id, create_user_name, manhole_list, organize_name)-->
+<!--		VALUES(#{gdId},1,#{applyPersonName},#{applyDate},#{applyDepartName},#{gdNum},-->
+<!--		    #{projectName},#{projectCode},#{projectBookletName}, #{projectBookletCode},-->
+<!--		    #{projectManager},#{projectManagerPhone},#{buildUnit},#{buildTimeLimit},-->
+<!--		    #{buildPersonId},#{buildUnitPerson},#{buildSitePhone},#{buildContent},-->
+<!--		    #{buildSection},#{lxProgram},#{sfDelay},#{sptgDatetime},#{endDatetime},-->
+<!--		    #{createTime},'System','超级管理员',#{manholeList},#{organizeName});-->
+<!--    </insert>-->
+
+<!--    <insert id="addRelation">-->
+<!--        INSERT INTO LT_WO_MC(WO_ID, MC_ID, create_time, create_user_id, create_user_name)-->
+<!--			 VALUES(#{gdId},#{manholeCoverId},#{createTime},'System','超级管理员')-->
+<!--    </insert>-->
+</mapper>
+
+

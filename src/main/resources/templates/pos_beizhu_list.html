@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="./pos_info/css/element-ui-2.14.1/theme-chalk/index.css">
+    <!-- import Vue before Element -->
+    <script src="./pos_info/js/vue.js"></script>
+    <!-- import JavaScript -->
+    <script src="./pos_info/js/element-ui-2.14.1/theme-chalk/index.js"></script>
+    <!-- import AXIOS -->
+    <script src="./pos_info/js/axios.min.js"></script>
+    <!-- import QS -->
+    <script src="./pos_info/js/qs.js"></script>
+</head>
+<body>
+<div id="app">
+
+    <el-container>
+        <el-header style="height: auto">
+            <el-row>
+                <el-col :span="2">
+                    <div class="grid-content"></div>
+                </el-col>
+                <!-- 管理系统横幅 -->
+                <el-col :span="12">
+                    <div class="grid-content">
+                        <img src="./pos_info/pic/banner.png">
+                    </div>
+                </el-col>
+                <el-col :span="4">
+                    <div class="grid-content"></div>
+                </el-col>
+                <!-- 联通冬奥LOGO -->
+                <el-col :span="6">
+                    <div class="grid-content">
+                        <img src="./pos_info/pic/logo2022.png">
+                    </div>
+                </el-col>
+            </el-row>
+            <el-divider content-position="right">欢迎 <B th:text="${uid}+'('+${uname}+')'"></B> 使用宽带资源数据审核后台工具&nbsp;&nbsp;&nbsp;&nbsp;
+                <div id="datetime" style="display:inline;"></div>
+            </el-divider>
+        </el-header>
+        <el-main>
+            <!-- 选项卡列表 -->
+            <el-tabs type="border-card">
+                <!-- 待审核备注列表选项卡 -->
+                <el-tab-pane label="待审核">
+                    <!-- 待审核备注列表 -->
+                    <el-table
+                            :data="beizhuList"
+                            style="width: 100%"
+                            max-height="700">
+                        <!-- 待审核备注的可展开列 -->
+                        <el-table-column type="expand">
+                            <template slot-scope="props">
+                                <el-form label-position="left" inline class="demo-table-expand">
+                                    <el-form-item label="区局">
+                                        <span>{{ props.row.pos.qu_ju }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="上联标识">
+                                        <span>{{ props.row.pos.pon_biaoshi }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="二维码编号">
+                                        <span>{{ props.row.pos.biao_qian }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="分纤盒">
+                                        <span>{{ props.row.pos.fenxian_he }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="OLT名称">
+                                        <span>{{ props.row.pos.olt_mingcheng }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="OLT IP地址">
+                                        <span>{{ props.row.pos.olt_ip_dizhi }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="OLT类型">
+                                        <span>{{ props.row.pos.olt_leixing }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="厂家">
+                                        <span>{{ props.row.pos.chang_jia }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="槽路">
+                                        <span>{{ props.row.pos.cao_lu }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="PON端口号">
+                                        <span>{{ props.row.pos.pon_duankou_hao }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="安装位置">
+                                        <span>{{ props.row.pos.anzhuang_weizhi }}</span>
+                                    </el-form-item>
+                                </el-form>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="POS编号"
+                                prop="pos.pos_bianhao"
+                                width="200">
+                        </el-table-column>
+                        <el-table-column
+                                label="楼宇名称"
+                                prop="pos.louyu_mingcheng"
+                                width="200">
+                        </el-table-column>
+                        <el-table-column
+                                label="位置类型"
+                                prop="pos.weizhi_leixing"
+                                width="100">
+                        </el-table-column>
+                        <el-table-column
+                                label="位置"
+                                prop="pos.wei_zhi"
+                                width="200">
+                        </el-table-column>
+                        <el-table-column
+                                label="备注"
+                                prop="bei_zhu"
+                                width="300">
+                        </el-table-column>
+                        <el-table-column
+                                label="操作员"
+                                prop="caozuo_yuan"
+                                width="100">
+                        </el-table-column>
+                        <el-table-column
+                                label="操作员电话"
+                                prop="caozuo_yuan_dianhua"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                label="操作时间"
+                                prop="caozuo_shijian"
+                                width="100"
+                                :formatter="caozuoFormat">
+                        </el-table-column>
+                        <!-- 按钮功能区 -->
+                        <el-table-column width="120">
+                            <template slot-scope="scope">
+                                <!-- 确认审核弹出框 -->
+                                <el-popconfirm
+                                    confirm-button-text = '确认'
+                                    @confirm="checkBeizhu(scope.row.beizhu_id)"
+                                    cancel-button-text ='返回'
+                                    icon="el-icon-info"
+                                    icon-color="red"
+                                    title="确认审核通过此备注吗?"
+                                >
+                                    <!-- 审核通过按钮 -->
+                                    <el-button slot="reference" type="warning" plain>审核通过</el-button>
+                                </el-popconfirm>
+                            </template>
+                        </el-table-column>
+                        <el-table-column  width="120">
+                            <template slot-scope="scope">
+                                <!-- 确认审核弹出框 -->
+                                <el-popconfirm
+                                        confirm-button-text = '确认'
+                                        @confirm="abandonBeizhu(scope.row.beizhu_id)"
+                                        cancel-button-text ='返回'
+                                        icon="el-icon-info"
+                                        icon-color="red"
+                                        title="确认此备注无效吗?"
+                                >
+                                    <!-- 审核通过按钮 -->
+                                    <el-button slot="reference" type="danger" plain>无效备注</el-button>
+                                </el-popconfirm>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </el-tab-pane>
+                <!-- 已审核备注列表选项卡 -->
+                <el-tab-pane label="已审核">
+                    <!-- 已审核备注列表(审核历史) -->
+                    <el-table
+                            :data="beizhuHistory"
+                            style="width: 100%"
+                            max-height="700">
+                        <!-- 已审核备注的可展开列 -->
+                        <el-table-column type="expand">
+                            <template slot-scope="props">
+                                <el-form label-position="left" inline class="demo-table-expand">
+                                    <el-form-item label="区局">
+                                        <span>{{ props.row.pos.qu_ju }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="上联标识">
+                                        <span>{{ props.row.pos.pon_biaoshi }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="二维码编号">
+                                        <span>{{ props.row.pos.biao_qian }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="分纤盒">
+                                        <span>{{ props.row.pos.fenxian_he }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="OLT名称">
+                                        <span>{{ props.row.pos.olt_mingcheng }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="OLT IP地址">
+                                        <span>{{ props.row.pos.olt_ip_dizhi }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="OLT类型">
+                                        <span>{{ props.row.pos.olt_leixing }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="厂家">
+                                        <span>{{ props.row.pos.chang_jia }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="槽路">
+                                        <span>{{ props.row.pos.cao_lu }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="PON端口号">
+                                        <span>{{ props.row.pos.pon_duankou_hao }}</span>
+                                    </el-form-item>
+                                    <el-form-item label="安装位置">
+                                        <span>{{ props.row.pos.anzhuang_weizhi }}</span>
+                                    </el-form-item>
+                                </el-form>
+                            </template>
+                        </el-table-column>
+                        <el-table-column
+                                label="POS编号"
+                                prop="pos.pos_bianhao"
+                                width="200">
+                        </el-table-column>
+                        <el-table-column
+                                label="楼宇名称"
+                                prop="pos.louyu_mingcheng"
+                                width="200">
+                        </el-table-column>
+                        <el-table-column
+                                label="位置类型"
+                                prop="pos.weizhi_leixing"
+                                width="100">
+                        </el-table-column>
+                        <el-table-column
+                                label="位置"
+                                prop="pos.wei_zhi"
+                                width="200">
+                        </el-table-column>
+                        <el-table-column
+                                label="备注"
+                                prop="bei_zhu"
+                                width="300">
+                        </el-table-column>
+                        <el-table-column
+                                label="操作员"
+                                prop="caozuo_yuan"
+                                width="100">
+                        </el-table-column>
+                        <el-table-column
+                                label="操作员电话"
+                                prop="caozuo_yuan_dianhua"
+                                width="120">
+                        </el-table-column>
+                        <el-table-column
+                                label="操作时间"
+                                prop="caozuo_shijian"
+                                width="100"
+                                :formatter="caozuoFormat">
+                        </el-table-column>
+                        <el-table-column
+                                label="审核员"
+                                prop="shenhe_yuan"
+                                width="100">
+                        </el-table-column>
+                        <el-table-column
+                                label="审核时间"
+                                prop="shenhe_shijian"
+                                width="100"
+                                :formatter="shenheFormat">
+                        </el-table-column>
+                    </el-table>
+                </el-tab-pane>
+            </el-tabs>
+        </el-main>
+    </el-container>
+</div>
+</body>
+
+<script>
+    var Main = {
+        data() {
+            return {
+                beizhuList:[],
+                beizhuHistory:[],
+            }
+        },
+        beforeCreate: function(){
+            document.title = "宽带资源数据审核后台工具"
+        },
+        mounted: function() {
+            // 页面加载执行方法
+            this.initialize();
+            this.get_pos_beizhu_list();
+            this.get_pos_beizhu_history();
+        },
+        methods: {
+            initialize: function(){
+                setInterval("document.getElementById('datetime').innerHTML=new Date().toLocaleString();", 1000);
+            },
+            // 日期时间格式化
+            dateFormat: function(t){
+                if(!t){
+                    return ''
+                }
+                let year = t.getFullYear()
+                let month = this.dateIfAddZero(t.getMonth()+1)
+                let day = this.dateIfAddZero(t.getDate())
+                let hours = this.dateIfAddZero(t.getHours())
+                let minutes = this.dateIfAddZero(t.getMinutes())
+                let seconds = this.dateIfAddZero(t.getSeconds())
+                return year + '-' + month + '-' + day+ ' ' + hours + ':' + minutes+ ':' + seconds
+            },
+            // 操作时间格式化
+            caozuoFormat: function(row) {
+                var t = new Date(row.caozuo_shijian)// row 表示一行数据, createTime 表示要格式化的字段名称
+                return this.dateFormat(t);
+            },
+            // 审核时间格式化
+            shenheFormat: function(row) {
+                var t = new Date(row.shenhe_shijian)// row 表示一行数据, createTime 表示要格式化的字段名称
+                return this.dateFormat(t);
+            },
+
+            // 日期时间补0
+            dateIfAddZero : function (time) {
+                return time < 10 ? '0'+ time : time
+            },
+            // 获取未审核POS备注列表
+            get_pos_beizhu_list() {
+                axios.get("/pos_info/api/getBeizhuList").then(res => {
+                    var arr = []
+                    for (let i in res.data) {
+                        arr.push(res.data[i]); //属性
+                    }
+                    this.beizhuList = arr;
+                })
+            },
+            // 获取已审核POS备注列表
+            get_pos_beizhu_history() {
+                axios.get("/pos_info/api/getBeizhuHistory").then(res => {
+                    var arr1 = []
+                    for (let i in res.data) {
+                        arr1.push(res.data[i]); //属性
+                    }
+                    this.beizhuHistory = arr1;
+                })
+            },
+            // 审核通过POS备注
+            checkBeizhu(beizhu_id){
+                let params = {
+                    beizhu_id : beizhu_id,
+                    shenhe_yuan : 'admin'
+                };
+                axios.post("/pos_info/api/checkBeizhu?" + Qs.stringify(params)).then(res => {
+                    if(res.data == "success"){
+                        this.$message({
+                            message: '分光器备注审核成功',
+                            type: 'success'
+                        });
+                        this.get_pos_beizhu_list();
+                        this.get_pos_beizhu_history();
+                    }
+                })
+            },
+            // 作废无效POS备注
+            abandonBeizhu(beizhu_id){
+                let params = {
+                    beizhu_id : beizhu_id,
+                    shenhe_yuan : 'admin'
+                };
+                axios.post("/pos_info/api/abandonBeizhu?" + Qs.stringify(params)).then(res => {
+                    if(res.data == "success"){
+                        this.$message({
+                            message: '分光器备注作废成功',
+                            type: 'success'
+                        });
+                        this.get_pos_beizhu_list();
+                        this.get_pos_beizhu_history();
+                    }
+                })
+            }
+        }
+    }
+    var Ctor = Vue.extend(Main)
+    new Ctor().$mount('#app')
+</script>
+<style>
+    .el-row {
+        margin-bottom: 5px;
+    }
+    .el-col {
+        border-radius: 4px;
+    }
+
+    .grid-content {
+        border-radius: 4px;
+        min-height: 30px;
+    }
+    .row-bg {
+        padding: 5px 0;
+        background-color: #f9fafc;
+    }
+    .demo-table-expand {
+        font-size: 0;
+    }
+    .demo-table-expand label {
+        width: 90px;
+        color: #99a9bf;
+    }
+    .demo-table-expand .el-form-item {
+        margin-right: 0;
+        margin-bottom: 0;
+        width: 50%;
+    }
+    .el-icon-arrow-right:before {
+        content: '\|▶';
+    }
+</style>
+</html>
+
